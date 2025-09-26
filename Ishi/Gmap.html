@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銀行ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  font-family:"Noto Sans JP", sans-serif;
+  background:#f5f7fa;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  position: sticky;
+  top:0;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.6em;
+  color: #4facfe;
+}
+
+/* ===== ナビゲーション ===== */
+nav { display:flex; align-items:center; }
+
+nav ul.menu {
+  list-style:none;
+  display:flex;
+  gap:15px;
+  margin:0; padding:0;
+}
+
+nav ul li { position:relative; }
+
+nav ul li a {
+  color:#333;
+  text-decoration:none;
+  padding:10px 12px;
+  border-radius:10px;
+  transition: all 0.3s ease;
+}
+
+/* PC用サブメニュー */
+.submenu {
+  list-style:none;
+  position:absolute;
+  top:100%;
+  left:0;
+  width:200px;
+  background:#fff;
+  padding:10px 0;
+  border-radius:6px;
+  box-shadow:0 6px 12px rgba(0,0,0,0.15);
+  opacity:0;
+  transform:translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events:none;
+  z-index:100;
+}
+
+.submenu li a {
+  display:block;
+  padding:8px 15px;
+  color:#333;
+  border-radius:4px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.submenu li a:hover { background:#e6f0ff; color:#4facfe; }
+
+/* PC hoverサブメニュー */
+@media(min-width:769px) {
+  nav li:hover > .submenu {
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+}
+
+/* ===== メニューアイコン ===== */
+.menu-icon { display:none; font-size:28px; cursor:pointer; border:none; background:none; color:#333; }
+
+/* ===== 閉じるボタン ===== */
+.close-menu button { display:none; }
+
+/* ===== レスポンシブ:スマホ ===== */
+@media(max-width:768px) {
+  .menu-icon { display:block; }
+
+  nav ul.menu {
+    flex-direction:column;
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    background: rgba(255,255,255,0.95);
+    padding:20px 0;
+    gap:10px;
+    transform:translateY(100%);
+    opacity:0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index:999;
+  }
+
+  nav ul.menu.open { transform:translateY(0); opacity:1; }
+
+  /* スマホ閉じるボタン */
+  .close-menu button {
+    display:block;
+    position:sticky;
+    top:0;
+    width:100%;
+    background:#fff;
+    color:#333;
+    font-size:24px;
+    text-align:left;
+    padding:12px 20px;
+    border:none;
+    cursor:pointer;
+    z-index:1000;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  nav ul li a { padding:12px 20px; }
+
+  /* スマホサブメニュー */
+  .submenu {
+    position:relative;
+    display:none;
+    width:100%;
+    box-shadow:none;
+    opacity:1;
+    transform:none;
+    pointer-events:auto;
+  }
+
+  .submenu.open { display:block; }
+
+  .submenu li a { padding:12px 20px; }
+}
+
+/* ===== Googleマップ検索フォーム ===== */
+.map-search-section {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.map-search-section h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+.map-search-section label {
+  display:block;
+  margin-bottom: 12px;
+  font-weight: bold;
+  color:#333;
+}
+.map-search-section input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.map-search-section button {
+  width: 100%;
+  padding: 12px;
+  background: #4facfe;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+.map-search-section button:hover {
+  background: #3a8de0;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">銀行ガイド<br>Googleマップ検索</div>
+  <nav>
+    <button class="menu-icon" id="menu-icon">☰</button>
+    <ul class="menu" id="menu">
+      <li class="close-menu"><button id="close-menu-btn">× 閉じる</button></li>
+      <li><a href="Hazime.html">ご利用前に</a></li>
+      <li><a href="HOME.html">HOME</a></li>
+      <li class="has-sub">
+        <a href="#" class="submenu-toggle">HOMEメニュー</a>
+        <ul class="submenu">
+          <li><a href="MegaBank.html">Mega Bank</a></li>
+          <li><a href="Ginkou.html">銀行一覧</a></li>
+          <li><a href="Shin.html">信用金庫</a></li>
+          <li><a href="Kumi.html">信用組合</a></li>
+          <li><a href="Net.html">ネットバンク開設手順</a></li>
+          <li><a href="Kasou.html">仮想通貨開設手順</a></li>
+          <li><a href="Sumaho.html">スマホ関連</a></li>
+          <li><a href="GinShin.html">銀行＆信用金庫一覧</a></li>
+          <li><a href="Gmap.html">Googleマップ検索</a></li>
+          <li><a href="Test.html">銀行テスト</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ===== Googleマップ検索フォームを追加 ===== -->
+<section class="map-search-section">
+  <h2>住所＋銀行名でGoogleマップ検索</h2>
+  <form id="mapForm">
+    <label>
+      住所
+      <input type="text" id="address" placeholder="例：東京都千代田区1-1">
+    </label>
+    <label>
+      銀行名
+      <input type="text" id="bank" placeholder="例：三菱UFJ銀行">
+    </label>
+    <button type="submit">Googleマップで検索</button>
+  </form>
+</section>
+
+<script>
+// メニュー開閉 + スマホサブメニュー制御
+document.addEventListener("DOMContentLoaded", () => {
+  const menuIcon = document.getElementById("menu-icon");
+  const menu = document.getElementById("menu");
+  const closeBtn = document.getElementById("close-menu-btn");
+
+  menuIcon.addEventListener("click", () => menu.classList.toggle("open"));
+  closeBtn.addEventListener("click", () => menu.classList.remove("open"));
+
+  // サブメニュー開閉
+  document.querySelectorAll(".submenu-toggle").forEach(toggle => {
+    toggle.addEventListener("click", e => {
+      e.preventDefault();
+      const submenu = toggle.nextElementSibling;
+
+      // 他の開いているサブメニューを閉じる
+      document.querySelectorAll(".submenu.open").forEach(openMenu => {
+        if (openMenu !== submenu) openMenu.classList.remove("open");
+      });
+
+      submenu.classList.toggle("open");
+    });
+  });
+
+  // Googleマップ検索フォーム
+  document.getElementById('mapForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const address = document.getElementById('address').value.trim();
+    const bank    = document.getElementById('bank').value.trim();
+
+    if(!address && !bank){
+      alert("住所か銀行名を入力してください");
+      return;
+    }
+
+    const query = encodeURIComponent(`${address} ${bank}`);
+    const mapUrl = `https://www.google.com/maps/search/?q=${query}`;
+    window.open(mapUrl, '_blank');
+  });
+});
+</script>
+
+</body>
+</html>

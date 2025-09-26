@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銀行ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  font-family:"Noto Sans JP", sans-serif;
+  background:#f5f7fa;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  position: sticky;
+  top:0;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.6em;
+  color: #4facfe;
+}
+
+/* ===== ナビゲーション ===== */
+nav {
+  display: flex;
+  align-items: center;
+}
+
+nav ul.menu {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin:0;
+  padding:0;
+}
+
+nav ul li {
+  position: relative;
+}
+
+nav ul li a {
+  position: relative;
+  color: #333;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+nav ul li a::after {
+  content:'';
+  position:absolute;
+  left:0; bottom:0;
+  width:0;
+  height:2px;
+  background:#4facfe;
+  border-radius:2px;
+  transition: width 0.3s ease;
+}
+
+nav ul li a:hover {
+  color:#4facfe;
+}
+
+nav ul li a:hover::after {
+  width:100%;
+}
+
+
+nav ul li a {
+  color: #333;             /* 好きな文字色 */
+  text-decoration: none;   /* 下線なし */
+}
+
+nav ul li a:hover {
+  color: #333;             /* ホバー時も色を変えない */
+}
+
+nav ul li a::after {
+  display: none;           /* 下線用の青ラインを非表示 */
+}
+
+/* ===== サブメニュー ===== */
+.submenu {
+  list-style:none;
+  position:absolute;
+  top:100%;
+  left:0;
+  width:100vw;  /* 画面幅いっぱい */
+  background:#fff;
+  padding:15px 0;
+  border-radius:0;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  opacity:0;
+  transform:translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events:none;
+  z-index:100;
+  max-height: 80vh; /* 画面高さの80%まで */
+  overflow-y: auto; /* 縦スクロールを追加 */
+}
+
+nav li:hover .submenu {
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+/* サブメニュー内リンク */
+.submenu li a {
+  padding:10px 20px;
+  display:block;
+  color:#333;
+  border-radius:8px;
+  transition: all 0.3s ease;
+}
+
+.submenu li a:hover {
+  background:#e6f0ff;
+  color:#4facfe;
+}
+
+/* メニューアイコン */
+.menu-icon {
+  display: none;
+  background:none;
+  border:none;
+  font-size:28px;
+  cursor:pointer;
+  color:#333;
+}
+
+/* ===== 検索ボックス ===== */
+.search-box {
+  display:flex;
+  gap:10px;
+  max-width:600px;
+  margin:20px auto;
+  padding:0 15px;
+}
+
+.search-box input {
+  flex:1;
+  padding:12px 20px;
+  border:none;
+  border-radius:50px;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  font-size:16px;
+  transition: all 0.3s ease;
+  outline:none;
+}
+
+.search-box input:focus {
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  transform: scale(1.02);
+}
+
+.search-box button {
+  padding:12px 20px;
+  border:none;
+  border-radius:50px;
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition: all 0.3s ease;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+}
+
+.search-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+/* ===== 銀行カード ===== */
+.bank-card {
+  background:#fff;
+  max-width:600px;
+  margin:20px auto;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 6px 12px rgba(0,0,0,0.1);
+  font-size:1.1em;
+}
+
+.bank-card h2 a {
+  color: inherit;        /* 親の文字色を使う */
+  text-decoration: none; /* 下線を消す */
+}
+
+.bank-card h2 a:hover {
+  color: inherit;        /* ホバーでも色を変えない */
+  text-decoration: none;
+}
+
+/* ===== フッター ===== */
+footer {
+  text-align:center;
+  padding:20px;
+  background:#eee;
+  color:#555;
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width:768px) {
+  .menu-icon { display:block; }
+
+  nav ul.menu {
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.95);
+    padding: 20px 0;
+    gap: 10px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 999;
+  }
+
+  nav ul.menu.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .close-menu button {
+    display: block;
+    background:none;
+    border:none;
+    font-size:24px;
+    cursor:pointer;
+    color:#333;
+    padding:10px 20px;
+    width:100%;
+    text-align:left;
+  }
+
+  nav ul li a {
+    padding: 12px 20px;
+  }
+
+  .submenu {
+     position: fixed;   /* 画面固定表示にする */
+    top: 60px;         /* ヘッダー分だけ下げる */
+    left: 0;
+    width: 100vw;      /* 画面幅いっぱい */
+    max-height: calc(100vh - 50px); /* 画面高さに収まる */
+    overflow-y: auto;  /* 縦スクロール可能 */
+    z-index: 9999;     /* 前面に出す */
+  }
+
+
+  .submenu li a {
+    padding: 15px 20px;
+  }
+}
+
+/* PCで閉じるボタン非表示 */
+@media (min-width:769px) {
+  .close-menu button {
+    display: none;
+  }
+}
+
+@media (max-width:480px) {
+  nav a { font-size:14px; }
+  .bank-card { margin:10px; padding:15px; font-size:1em; }
+  .search-box input { font-size:14px; }
+  .search-box button { font-size:14px; }
+  .logo { font-size:1.3em; }
+}
+
+
+
+
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  background: #0078d4;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 9999;
+}
+
+.back-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* スマホ用サブメニュー開閉 */
+@media (max-width:768px) {
+  .submenu {
+    display: none; /* 初期は非表示 */
+    position: relative; /* fixedからrelativeに変更 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-height: none;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .submenu.open {
+    display: block; /* openクラスで表示 */
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">銀行ガイド<br>スマホ関連</div>
+  <nav>
+    <button class="menu-icon" id="menu-icon">☰</button>
+    <ul class="menu" id="menu">
+      <li class="close-menu"><button id="close-menu-btn">× 閉じる</button></li>
+      <li><a href="Hazime.html">ご利用前に</a></li>
+      <li><a href="HOME.html">HOME</a></li>
+      <li><a href="#">HOMEメニュー</a>
+        <ul class="submenu">
+          <li><a href="MegaBank.html">Mega Bank</a></li>
+          <li><a href="Ginkou.html">銀行一覧</a></li>
+          <li><a href="Shin.html">信用金庫</a></li>
+          <li><a href="Kumi.html">信用組合</a></li>
+          <li><a href="Net.html">ネットバンク開設手順</a></li>
+          <li><a href="Kasou.html">仮想通貨開設手順</a></li>
+          <li><a href="Sumaho.html">スマホ関連</a></li>
+          <li><a href="GinShin.html">銀行＆信用金庫一覧</a></li>
+          <li><a href="Gmap.html">Googleマップ検索</a></li>
+          <li><a href="Test.html">銀行テスト</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section class="search-box">
+    <input type="text" id="searchInput" placeholder="ページ内検索...">
+    <button onclick="location.reload()">検索結果をリセット</button>
+  </section>
+
+   <section id="section1"class="bank-card">
+       <a href="javascript:void(0)" onclick="toggleSection('sectionContent')"> 
+        <h2>LINE画面共有</h2>
+    </a>
+    <div style="position: relative; padding-bottom: 75%; height: 0; overflow: hidden;">
+  <iframe 
+      src="ＬＩＮＥ画面共有.pdf" 
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+      frameborder="0">
+  </iframe>
+</div>
+</section>
+
+
+<section id="section2"class="bank-card">
+       <a href="javascript:void(0)" onclick="toggleSection('sectionContent2')"> 
+        <h2>LINE登録</h2>
+    </a>
+    
+    <div style="position: relative; padding-bottom: 75%; height: 0; overflow: hidden;">
+  <iframe 
+      src="LINE登録手順.pdf" 
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+      frameborder="0">
+  </iframe>
+</div>
+</section>
+   
+
+<script>
+// ページ内検索
+document.getElementById('searchInput').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const sections = document.querySelectorAll('main .bank-card');
+    sections.forEach(section => {
+        const text = section.innerText.toLowerCase();
+        if (text.includes(filter)) {
+            section.style.display = '';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+});
+
+</script>
+</main>
+
+<footer>
+  ©2025 Bank List
+</footer>
+
+<button id="backToTop" class="back-to-top">▲</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const menuIcon = document.getElementById("menu-icon");
+  const menu = document.getElementById("menu");
+  const closeBtn = document.getElementById("close-menu-btn");
+
+  menuIcon.addEventListener("click", () => {
+    menu.classList.toggle("open");
+  });
+
+  closeBtn.addEventListener("click", () => {
+    menu.classList.remove("open");
+  });
+});
+// 最上部
+const backToTop = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 200) {
+    backToTop.classList.add('show');
+  } else {
+    backToTop.classList.remove('show');
+  }
+});
+
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+// スマホ用サブメニュー開閉
+document.querySelectorAll('nav ul.menu > li > a').forEach(link => {
+  const submenu = link.nextElementSibling;
+  if (submenu && submenu.classList.contains('submenu')) {
+    link.addEventListener('click', e => {
+      e.preventDefault(); // ページ遷移を止める
+      submenu.classList.toggle('open'); // openクラスで表示
+    });
+  }
+});
+</script>
+
+
+</body>
+</html>

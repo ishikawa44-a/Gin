@@ -1,0 +1,3235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銀行ガイド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  font-family:"Noto Sans JP", sans-serif;
+  background:#f5f7fa;
+}
+
+/* ===== ヘッダー ===== */
+header {
+  position: sticky;
+  top:0;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  flex-wrap: wrap;
+}
+.logo { font-weight: bold; font-size: 1.6em; color: #4facfe; }
+nav { display: flex; align-items: center; position: relative; }
+nav ul.menu { list-style: none; display: flex; gap: 15px; margin:0; padding:0; }
+nav ul li { position: relative; }
+nav ul li a { color: #333; text-decoration: none; padding: 10px 12px; border-radius: 10px; transition: all 0.3s ease; display: block; }
+nav ul li a:hover { color:#4facfe; }
+.submenu { list-style:none; position:absolute; top:100%; left:0; background:#fff; padding:10px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1); opacity:0; transform:translateY(10px); transition: all 0.3s ease; pointer-events:none; z-index:100; }
+nav li:hover .submenu { opacity:1; transform:translateY(0); pointer-events:auto; }
+.submenu li a { display:block; padding:10px 20px; color:#333; }
+.submenu li a:hover { background:#e6f0ff; color:#4facfe; }
+
+.menu-icon { display: none; background:none; border:none; font-size:28px; cursor:pointer; color:#333; }
+.close-menu-btn { display:none; font-size:24px; background:none; border:none; color:#333; cursor:pointer; position:absolute; top:10px; left:10px; z-index:1000; }
+
+@media (max-width:768px) {
+  .menu-icon { display:block; }
+  nav ul.menu { flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; max-height: 90vh; overflow-y: auto; background: rgba(255,255,255,0.95); padding: 60px 20px 20px 20px; gap: 10px; transform: translateY(-100%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; z-index: 999; }
+  nav ul.menu.open { transform: translateY(0); opacity: 1; }
+  .submenu { display: none; position: static; box-shadow: none; opacity:1; transform:none; pointer-events:auto; }
+  .submenu.open { display: block; }
+  li.has-submenu > a::after { content: "▼"; float: right; margin-left: 5px; font-size: 0.7em; }
+  .close-menu-btn.show { display:block; }
+}
+
+/* ===== 検索・操作ボックス ===== */
+.control-box {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  max-width:700px;
+  margin:20px auto;
+  padding:0 15px;
+}
+.control-box input[type="text"] {
+  flex:1;
+  min-width:150px;
+  padding:10px 15px;
+  border:none;
+  border-radius:25px;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  font-size:16px;
+}
+.control-box button {
+  padding:10px 20px;
+  border:none;
+  border-radius:25px;
+  background:linear-gradient(90deg,#4facfe,#00f2fe);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 4px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+.control-box button:hover { opacity:0.9; transform:scale(1.05); }
+
+/* ===== 銀行カード 1列レイアウト ===== */
+.bank-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.bank-card {
+  position: relative; /* 左上固定用 */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  padding: 80px 20px 20px 20px; /* 上部にヘッダー分のスペース */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 見出し＋チェックボックス 左上固定 */
+.bank-card-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bank-card-header h2,
+.bank-card-header h2 a {
+  font-size: 1.5em;  /* さらに大きく */
+  margin: 0;
+}
+
+.bank-card input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
+.bank-card p {
+  margin-top: 5px; /* h2 との間隔をさらに狭める */
+}
+
+/* ページトップボタン */
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 48px;
+  height: 48px;
+  background: #0078d4;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 9999;
+}
+.back-to-top.show { opacity: 1; pointer-events: auto; }
+
+@media (max-width:480px){
+  .logo{font-size:1.3em;}
+  .control-box input[type="text"]{font-size:14px;}
+  .control-box button{font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">銀行ガイド<br>銀行＆信用金庫一覧</div>
+  <nav>
+    <button class="menu-icon" id="menu-icon">☰</button>
+    <ul class="menu" id="menu">
+      <button class="close-menu-btn" id="closeMenuBtn">✖閉じる</button>
+      <li><a href="Hazime.html">ご利用前に</a></li>
+      <li><a href="HOME.html">HOME</a></li>
+      <li class="has-submenu"><a href="#">HOMEメニュー</a>
+        <ul class="submenu">
+          <li><a href="MegaBank.html">Mega Bank</a></li>
+          <li><a href="Ginkou.html">銀行一覧</a></li>
+          <li><a href="Shin.html">信用金庫</a></li>
+          <li><a href="Kumi.html">信用組合</a></li>
+          <li><a href="Net.html">ネットバンク開設手順</a></li>
+          <li><a href="Kasou.html">仮想通貨開設手順</a></li>
+          <li><a href="Sumaho.html">スマホ関連</a></li>
+          <li><a href="GinShin.html">銀行＆信用金庫一覧</a></li>
+          <li><a href="Gmap.html">Googleマップ検索</a></li>
+          <li><a href="Test.html">銀行テスト</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="control-box">
+    <input type="text" id="searchInput" placeholder="ページ内検索...">
+    <button id="filterBtn">チェックした項目を表示</button>
+    <button id="resetBtn">リセット</button>
+  </div>
+
+  <div class="bank-card-wrapper">
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>あいち銀行</h2>
+      </div>
+      <p>・ATM振込限度額:150万円<br>・ATM出金限度額:150万円<br>（振込、出金を合算しての限度額）<br>
+      <br>・振込対応コンビニ:ローソン、セブイレ、イーネット 
+      </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>あおぞら銀行</h2>
+      </div>
+      <p>・ATM出金限度額:50万円<br>※恐らくネットバンクの為振込はネットバンク限定
+      </p>
+    </section>
+
+      <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>青森みちのく銀行</h2></div>
+        <p>・ATM振込上限額:100万円<br>・ATM出金限度額100万円<br>（振込、出金は合算せずに個々の限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+        </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>秋田銀行</h2></div>
+        <p>・ATM振込限度額:100万円<br>・ATM出金限度額:100万円<br>（振込、出金を合算しての限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+        </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>足利銀行</h2></div>
+        <p>・ATM振込上限額:100万円<br>・ATM出金限度額:50万円<br>（振込、出金を合算しての限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>阿波銀行</h2></div>
+        <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:200万円<br>
+        ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>池田泉州銀行</h2></div>
+        <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+        ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:無
+</p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>伊予銀行</h2></div>
+        <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+        ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>岩手銀行</h2></div>
+        <p>・ATM振込上限額:100万円<br>・ATM出金限度額:100万円<br>
+        <br>（振込、出金は合算せずに個々の限度額）<br>
+        <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+    </section>
+
+   <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>ウリィ銀行</h2></div>
+        <p>謎</p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>SMBC信託銀行</h2></div>
+        <p>・ATM振込上限額:100万円<br>・ATM出金限度額:50万円<br>
+        <br>（振込、出金は合算せずに個々の限度額）<br>
+        <br>・振込対応コンビニ:無
+    </p>
+    </section>
+
+   <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>SBI新生銀行</h2></div>
+        <p>・ネットバンキング振込限度額:1000万円</p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>SBJ銀行</h2></div>
+        <p>謎</p>
+    </section>
+
+    <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>愛媛銀行</h2></div>
+        <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+        ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+        <br>・振込対応コンビニ:セブイレ
+    </p>
+    </section>
+
+   <section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>auじぶん銀行</h2></div>
+    <p>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>
+    <br>・ネットバンクの為ATM振込不可<br>・ネットバンキング振込限度額1000万円<br><br>※2025年5月19日（月）より、振込限度額の変更に関して以下の取扱いとなります。詳しくはauじぶん銀行ウェブサイトをご覧ください。
+<br>（1）現在設定されている振込限度額が上限となります<br>（既に100万円超の振込限度額を設定している場合はその限度額が適用されます）。<br>
+（2）現在設定されている振込限度額を超える金額の振込を行う場合や100万円超の振込限度額の引上げを行う場合は、キャッシュカードをお手元にご用意のうえ、お客さまセンターへご連絡ください。なお、土・日・祝日9:00～17:00に受付した振込限度額の引上げは翌営業日に実施させていただきます。
+お客さまには大変ご不便・ご迷惑をおかけいたしますが、セキュリティ対応のため、何卒ご理解賜りますようお願い申し上げます
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>大分銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>大垣共立銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:200万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>沖縄銀行</h2></div>
+    <p>・ATM振込上限額:200万円<br>・ATM出金限度額:200万円<br>
+    （振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>沖縄海邦銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>オリックス銀行</h2></div>
+    <p>・ネットバンクのみ<br>・ネットバンキング振込限度額5000万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>香川銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>神奈川銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>関西みらい銀行</h2></div>
+    <p>・ATM振込上限額:100万円<br>・ATM出金限度額:50万円<br>
+    （振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北九州銀行</h2></div>
+    <p>・ATM振込上限額:50万円<br>・ATM出金限度額:50万円<br>
+    （振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北日本銀行</h2></div>
+    <p>・ATM振込上限額:100万円<br>・ATM出金限度額:100万円<br>
+    （振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>紀陽銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>京都銀行</h2></div>
+    <p>・ATM振込上限額:50万円<br>・ATM出金限度額:50万円<br>
+    ・ATM一ヶ月での限度額:200万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>きらぼし銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>きらやか銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>熊本銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>群馬銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>京葉銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>高知銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>西京銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>埼玉りそな銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>佐賀銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>佐賀共栄銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>山陰合同銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット<br><br>※上記内容は65歳未満です。
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>三十三銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>GMOあおぞらネット銀行</h2></div>
+    <p>・ネットバンクの為ATM振込不可<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>滋賀銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>四国銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>静岡銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>静岡中央銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可<br>※上記内容は静岡中央銀行のATMを使用した場合です。
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>七十七銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>島根銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>清水銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>十八親和銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>十六銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>荘内銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:200万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>常陽銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>住信SBIネット銀行</h2></div>
+    <p>・ネットバンクの為ATM振込不可<br>・ネットバンキング振込限度額1000万円<br>・ATM出金限度額:50万円<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>スルガ銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>セブン銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:セブイレ
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>仙台銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>ソニー銀行</h2></div>
+    <p>・ネットバンクの為ATM振込不可<br>・ネットバンキング振込限度額1000万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>大光銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>第四北越銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>大東銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>但馬銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>筑邦銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>千葉銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:200万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>千葉興行銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:200万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>中国銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気: 50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>筑波銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>東京スター銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>東邦銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円（コンビニの場合は50万円）<br>・ATM振込上限額磁気:100万円（コンビニの場合は50万円）
+        <br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>東北銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>東和銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>徳島大正銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>栃木銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>鳥取銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>トマト銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>富山銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>富山第一銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>長崎銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>長野銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>名古屋銀行</h2></div>
+    <p>・ATM振込上限額IC:150万円<br>・ATM振込上限額磁気:150万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気: 50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>南都銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>西日本シティ銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>八十二銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>ハナ銀行</h2></div>
+    <p>謎
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>ハナ銀行（GLN）</h2></div>
+    <p>謎
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>東日本銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>肥後銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>百五銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>百十四銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>広島銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>福井銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>福岡銀行</h2></div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>福岡中央銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>福島銀行</h2></div>
+    <p>・ATM振込上限額IC:？万円<br>・ATM振込上限額磁気:？万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>福邦銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>ブラジル銀行</h2></div>
+    <p>謎
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>PayPay銀行</h2></div>
+    <p>・ネットバンキング振込限度額1000万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>豊和銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北都銀行</h2></div>
+    <p>・不明<br>
+    <br>・振込対応コンビニ:不可
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北洋銀行</h2></div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北陸銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+      <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+    <h2>北海道銀行</h2></div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット
+    </p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北國銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>三井住友信託銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>三菱UFJ信託銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>みなと銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>南日本銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>宮崎銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:200万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金は合算せずに個々の限度額？？）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>宮崎太陽銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ<br>※コンビニや他行からの場合50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>みんなの銀行</h2>
+    </div>
+    <p>・ネットバンキング振込限度額500万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>武蔵野銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:セブイレ、ローソン、イーネット</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>もみじ銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>山形銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:100万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:100万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>山口銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:50万円<br>・ATM振込上限額磁気:50万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>山梨中央銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金は合算せずに個々の限度額）<br>
+    <br>・振込対応コンビニ:不可</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>UI銀行</h2>
+    </div>
+    <p>・ネットバンキング振込限度額1000万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>横浜銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:100万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>楽天銀行</h2>
+    </div>
+    <p>・ネットバンキング振込限度額3000万円は確定ですが、それ以上設定できる可能性あり。</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>琉球銀行</h2>
+    </div>
+    <p>・ATM振込上限額IC:200万円<br>・ATM振込上限額磁気:100万円<br>・ATM出金限度額IC:50万円<br>
+    ・ATM出金限度額磁気:50万円<br>（振込、出金を合算しての限度額）<br>
+    <br>・振込対応コンビニ:ローソン、イーネット</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>アイオー信用金庫（あいおー）</h2>
+    </div>
+    <p>・ATM振込限度額IC:200万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:200万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>青い森信用金庫（あおいもり）</h2>
+    </div>
+    <p>・ATM振込限度額IC:200万円<br>・ATM出金限度額IC:30万円<br>
+       ・ATM振込限度額磁気:200万円<br>・ATM出金限度額磁気:30万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>青木信用金庫（あおき）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>朝日信用金庫（あさひ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>旭川信用金庫（あさひかわ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>足利小山信用金庫（あしかがおやま）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>足立成和信用金庫（あだちせいわ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:100万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>網走信用金庫（あばしり）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>あぶくま信用金庫（あぶくま）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>尼崎信用金庫（あまがさき）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>アルプス中央信用金庫（あるぷすちゅうおう）</h2>
+    </div>
+    <p>・ATM振込限度額IC:200万円<br>・ATM出金限度額IC:100万円<br>
+       ・ATM振込限度額磁気:200万円<br>・ATM出金限度額磁気:100万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>淡路信用金庫（あわじ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>飯田信用金庫（いいだ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:500万円<br>・ATM出金限度額磁気:100万円<br>
+       <img src="iida.png" alt="サンプル画像" width="300" height="200"></p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>飯塚信用金庫（いいづか）</h2>
+    </div>
+    <p>・ATM振込限度額IC:200万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:200万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>いちい信用金庫（いちい）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>伊万里信用金庫（いまり）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>上田信用金庫（うえだ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>永和信用金庫（えいわ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>越前信用金庫（えちぜん）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>愛媛信用金庫（えひめ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:100万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:100万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>遠軽信用金庫（えんがる）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>遠州信用金庫（えんしゅう）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:100万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:100万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>青梅信用金庫（おうめ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大垣西濃信用金庫（おおがきせいのう）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大阪信用金庫（おおさか）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大阪厚生信用金庫（おおさかこうせい）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:100万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大阪シティ信用金庫（おおさかしてぃ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大阪商工信用金庫（おおさかしょうこう）</h2>
+    </div>
+    <p>・ATM振込限度額IC:50万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:50万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>渡島信用金庫（おしま）</h2>
+    </div>
+    <p>・ATM振込限度額IC:30万円<br>・ATM出金限度額IC:30万円<br>
+       ・ATM振込限度額磁気:30万円<br>・ATM出金限度額磁気:30万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>帯広信用金庫（おびひろ）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>鹿児島信用金庫（かごしま）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>鹿児島相互信用金庫（かごしまそうご）</h2>
+    </div>
+    <p>・ATM振込限度額IC:100万円<br>・ATM出金限度額IC:50万円<br>
+       ・ATM振込限度額磁気:100万円<br>・ATM出金限度額磁気:50万円</p>
+</section>
+
+<section class="bank-card" id="section151">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>柏崎信用金庫（かしわざき）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section152">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>かながわ信用金庫（神奈川）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section153">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>金沢信用金庫（かなざわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section154">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>蒲郡信用金庫（がまごおり）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section155">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>加茂信用金庫（かも）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section156">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>川口信用金庫（かわぐち）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section157">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>川崎信用金庫（かわさき）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section158">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北伊勢上野信用金庫（きたいせうえの）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section159">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北おおさか信用金庫（北大阪）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section160">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北上信用金庫（きたかみ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section161">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北空知信用金庫（きたそらち）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section162">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>きのくに信用金庫（きのくに）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section163">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>紀北信用金庫（きほく）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section164">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>京都信用金庫（きょうと）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section165">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>京都中央信用金庫（きょうとちゅうおう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section166">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>桐生信用金庫（きりゅう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section167">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>釧路信用金庫（くしろ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section168">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>熊本信用金庫（くまもと）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section169">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>熊本第一信用金庫（くまもとだいいち）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section170">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>桑名三重信用金庫（くわなみえ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section171">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>興産信用金庫（こうさん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section172">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>興能信用金庫（こうのう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:150万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:150万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section173">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>甲府信用金庫（こうふ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section174">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>神戸信用金庫（こうべ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:300万円<br>
+        ・ATM出金限度額IC:不明<br>
+        ・ATM振込限度額磁気:300万円<br>
+        ・ATM出金限度額磁気:不明
+    </p>
+</section>
+
+<section class="bank-card" id="section175">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>コザ信用金庫（こざ）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section176">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>湖東信用金庫（ことう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section177">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>小松川信用金庫（こまつがわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section178">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>埼玉縣信用金庫（さいたまけん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section179">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>さがみ信用金庫（相模）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section180">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>さわやか信用金庫（さわやか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section181">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>三条信用金庫（さんじょう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section182">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>滋賀中央信用金庫（しがちゅうおう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section183">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>しずおか焼津信用金庫（静岡やいづ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section184">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>しののめ信用金庫（しののめ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:300万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:300万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section185">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>芝信用金庫（しば）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section186">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>島田掛川信用金庫（しまだかけがわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section187">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>しまなみ信用金庫（しまなみ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section188">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>島根中央信用金庫（しまねちゅうおう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section189">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>上越信用金庫（じょうえつ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section190">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>湘南信用金庫（しょうなん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section191">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>城南信用金庫（じょうなん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section192">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>城北信用金庫（じょうほく）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section193">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>昭和信用金庫（しょうわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section194">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>白河信用金庫（しらかわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section195">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>新庄信用金庫（しんじょう）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section196">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>巣鴨信用金庫（すがも）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section197">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>諏訪信用金庫（すわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section198">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>静清信用金庫（せいしん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section199">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>西武信用金庫（せいぶ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section200">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>世田谷信用金庫（せたがや）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section201">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>瀬戸信用金庫（せと）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section202">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>空知信用金庫（そらち）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section203">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>高崎信用金庫（たかさき）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section204">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>高松信用金庫（たかまつ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section205">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>高山信用金庫（たかやま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section206">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>たちばな信用金庫（たちばな）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section207">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>館山信用金庫（たてやま）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section208">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>伊達信用金庫（だて）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section209">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>多摩信用金庫（たま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section210">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>玉島信用金庫（たましま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section211">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>知多信用金庫（ちた）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section212">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>中南信用金庫（ちゅうなん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section213">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>中日信用金庫（ちゅうにち）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section214">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>銚子信用金庫（ちょうし）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section215">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>鶴岡信用金庫（つるおか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section216">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>敦賀信用金庫（つるが）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section217">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>東栄信用金庫（とうえい）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section218">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>東京信用金庫（とうきょう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section219">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>東京東信用金庫（とうきょうひがし）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section220">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>東春信用金庫（とうしゅん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section221">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>東濃信用金庫（とうのう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section222">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>道南うみ街信用金庫（どうなんうみまち）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section223">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>徳島信用金庫（とくしま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section224">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>鳥取信用金庫（とっとり）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section225">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>利根郡信用金庫（とねぐん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section226">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>苫小牧信用金庫（とまこまい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section227">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>富山信用金庫（とやま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section228">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>豊川信用金庫（とよかわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section229">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>豊田信用金庫（とよた）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section230">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>豊橋信用金庫（とよはし）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section231">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>長岡信用金庫（ながおか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section232">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>長野信用金庫（ながの）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section233">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>奈良信用金庫（なら）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section234">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>新潟信用金庫（にいがた）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section235">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>にいかわ信用金庫（にいかわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section236">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>西尾信用金庫（にしお）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section237">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>日新信用金庫（にっしん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section238">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>日本海信用金庫（にほんかい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section239">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>二本松信用金庫（にほんまつ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section240">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>沼津信用金庫（ぬまづ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section241">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>のと共栄信用金庫（のときょうえい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section242">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>はくさん信用金庫（はくさん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section243">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>半田信用金庫（はんだ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section244">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>飯能信用金庫（はんのう）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:30万円<br>
+        ・ATM出金限度額磁気:30万円
+    </p>
+</section>
+
+<section class="bank-card" id="section245">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>尾西信用金庫（びさい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section246">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>日高信用金庫（ひだか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section247">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>姫路信用金庫（ひめじ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section248">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>兵庫信用金庫（ひょうご）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section249">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>枚方信用金庫（ひらかた）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section250">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>平塚信用金庫（ひらつか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section251">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>広島信用金庫（ひろしま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section252">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>福井信用金庫（ふくい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section253">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>福岡ひびき信用金庫（ふくおかひびき）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section254">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>福島信用金庫（ふくしま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section255">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>富士信用金庫（ふじ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section256">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>富士宮信用金庫（ふじのみや）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section257">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>碧海信用金庫（へきかい）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:200万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section258">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>北門信用金庫（ほくもん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section259">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>松本信用金庫（まつもと）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section260">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>三島信用金庫（みしま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section261">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>水戸信用金庫（みと）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section262">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>村上信用金庫（むらかみ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section263">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>室蘭信用金庫（むろらん）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section264">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>盛岡信用金庫（もりおか）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section265">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>山形信用金庫（やまがた）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section266">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>大和信用金庫（やまと）</h2>
+    </div>
+    <p>
+        <img src="ss1.png" alt="サンプル画像" width="450" height="200">
+    </p>
+</section>
+
+<section class="bank-card" id="section267">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>山梨信用金庫（やまなし）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section268">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>結城信用金庫（ゆうき）</h2>
+    </div>
+    <p>不明</p>
+</section>
+
+<section class="bank-card" id="section269">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>横浜信用金庫（よこはま）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:50万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:50万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+
+<section class="bank-card" id="section270">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>米子信用金庫（よなご）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section271">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>米沢信用金庫（よねざわ）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:200万円<br>
+        ・ATM出金限度額IC:100万円<br>
+        ・ATM振込限度額磁気:200万円<br>
+        ・ATM出金限度額磁気:100万円
+    </p>
+</section>
+
+<section class="bank-card" id="section272">
+    <div class="bank-card-header">
+        <input type="checkbox" class="select-card">
+        <h2>稚内信用金庫（わっかない）</h2>
+    </div>
+    <p>
+        ・ATM振込限度額IC:100万円<br>
+        ・ATM出金限度額IC:50万円<br>
+        ・ATM振込限度額磁気:100万円<br>
+        ・ATM出金限度額磁気:50万円
+    </p>
+</section>
+  </div>
+</main>
+
+<footer style="text-align:center;padding:20px;background:#eee;color:#555;">©2025 Bank List</footer>
+<button id="backToTop" class="back-to-top">▲</button>
+
+<script>
+// メニュー開閉
+const menuIcon = document.getElementById("menu-icon");
+const menu = document.getElementById("menu");
+const closeMenuBtn = document.getElementById("closeMenuBtn");
+
+menuIcon.addEventListener("click", () => {
+  menu.classList.add("open");
+  closeMenuBtn.classList.add("show");
+});
+closeMenuBtn.addEventListener("click", () => {
+  menu.classList.remove("open");
+  closeMenuBtn.classList.remove("show");
+});
+
+// サブメニュー開閉（スマホ）
+document.querySelectorAll('li.has-submenu > a').forEach(anchor => {
+  anchor.addEventListener('click', function(e){
+    if(window.innerWidth <= 768){
+      e.preventDefault();
+      const submenu = this.nextElementSibling;
+      submenu.classList.toggle('open');
+    }
+  });
+});
+
+// 検索・チェック・リセット
+const searchInput = document.getElementById('searchInput');
+const sections = document.querySelectorAll('.bank-card');
+let filterCheckedOnly = false;
+
+function applyFilterAndSearch() {
+  const kw = searchInput.value.toLowerCase();
+  sections.forEach(sec => {
+    const checkbox = sec.querySelector('.select-card');
+    const text = sec.innerText.toLowerCase();
+    let show = text.includes(kw);
+    if(filterCheckedOnly && checkbox && !checkbox.checked) show = false;
+    sec.style.display = show ? 'block' : 'none';
+  });
+}
+
+searchInput.addEventListener('input', applyFilterAndSearch);
+document.getElementById('filterBtn').addEventListener('click', () => { filterCheckedOnly = true; applyFilterAndSearch(); });
+document.getElementById('resetBtn').addEventListener('click', () => {
+  searchInput.value = '';
+  filterCheckedOnly = false;
+  sections.forEach(sec => { const cb = sec.querySelector('.select-card'); if(cb) cb.checked=false; sec.style.display='block'; });
+});
+
+// ページトップ
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => backToTop.classList.toggle('show', window.scrollY > 200));
+backToTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+
+
+</script>
+
+</body>
+</html>
