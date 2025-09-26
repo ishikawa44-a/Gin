@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログインページ</title>
+
+<!-- Googleフォント -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* 全体設定 */
+  body {
+    margin: 0;
+    font-family: "Noto Sans JP", sans-serif;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* ログインカード */
+  .login-container {
+    width: 90%;
+    max-width: 360px;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    text-align: center;
+  }
+
+  .login-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .error {
+    color: #e74c3c;
+    background: #fdecea;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+    font-size: 0.9rem;
+  }
+
+  /* 入力欄 */
+  .login-container input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .login-container input:focus {
+    border-color: #4facfe;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79,172,254,0.2);
+  }
+
+  /* ボタン */
+  .login-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .login-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  /* スマホでも中央寄せ */
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 30px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>ログイン</h2>
+  <div class="error" id="errorMsg">ユーザー名かパスワードが間違っています</div>
+  <input type="text" id="username" placeholder="ユーザー名">
+  <input type="password" id="password" placeholder="パスワード">
+  <button onclick="login()">ログイン</button>
+</div>
+
+<script>
+function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const correctUsername = ["1", "8", "9", "11", "99"];
+  const correctPassword = "8989";
+
+  // ユーザー名が配列内に含まれているかを確認
+  if (correctUsername.includes(username) && password === correctPassword) {
+    // ログイン成功、遷移
+    window.location.href = "Ishi/HOME.html";
+  } else {
+    // エラーメッセージ表示
+    document.getElementById("errorMsg").style.display = "block";
+  }
+}
+</script>
+
+</body>
+</html>
