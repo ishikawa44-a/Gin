@@ -109,14 +109,17 @@ function login() {
   const correctUsername = ["1", "8", "9", "11", "99"];
   const correctPassword = "8989";
 
-  if (username === correctUsername && password === correctPassword) {
-    // 相対パスで遷移
+  // ユーザー名が配列内に含まれているかを確認
+  if (correctUsername.includes(username) && password === correctPassword) {
+    // ログイン成功、遷移
     window.location.href = "Ishi/HOME.html";
   } else {
+    // エラーメッセージ表示
     document.getElementById("errorMsg").style.display = "block";
   }
 }
 </script>
 
 </body>
+
 </html>
